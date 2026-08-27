@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>POP de Setup — Implantação de conta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#0F1F35;
+  --tinta-80:#2C3F58;
+  --tinta-55:#63748B;
+  --papel:#F2F4F7;
+  --branco:#FFFFFF;
+  --linha:#D9DFE7;
+  --linha-forte:#B9C3CF;
+  --acao:#1F5FD0;
+  --acao-fraco:#EAF1FD;
+  --ok:#12734A;
+  --ok-fraco:#E7F4ED;
+  --atencao:#9A5B00;
+  --atencao-fraco:#FCF1DF;
+  --bloqueio:#A81F17;
+  --bloqueio-fraco:#FBECEA;
+  --display:"IBM Plex Sans Condensed",-apple-system,"Segoe UI",sans-serif;
+  --corpo:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --lateral:270px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{
+  margin:0;background:var(--papel);color:var(--tinta);
+  font-family:var(--corpo);font-size:15.5px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--acao)}
+:focus-visible{outline:2.5px solid var(--acao);outline-offset:2px;border-radius:2px}
+
+/* ---------- ESTRUTURA ---------- */
+.casca{display:grid;grid-template-columns:var(--lateral) minmax(0,1fr);align-items:start}
+.lateral{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--tinta);color:#DCE4EE;padding:22px 0 40px;
+}
+.lateral__marca{padding:0 20px 18px;border-bottom:1px solid rgba(255,255,255,.13)}
+.lateral__marca b{
+  display:block;font-family:var(--display);font-weight:700;font-size:19px;
+  letter-spacing:.01em;color:#fff;line-height:1.15
+}
+.lateral__marca span{
+  display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:#7F93AC;margin-top:6px
+}
+.progresso{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.13)}
+.progresso__topo{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;color:#8FA3BC;letter-spacing:.06em}
+.progresso__topo b{color:#fff;font-size:15px;font-weight:600}
+.barra{height:4px;background:rgba(255,255,255,.14);border-radius:99px;margin-top:9px;overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:#37D08A;transition:width .35s ease}
+.indice{list-style:none;margin:14px 0 0;padding:0}
+.indice a{
+  display:grid;grid-template-columns:26px 1fr;gap:9px;align-items:baseline;
+  padding:7px 20px;color:#B9C7D8;text-decoration:none;font-size:13.6px;line-height:1.35;
+  border-left:3px solid transparent
+}
+.indice a:hover{background:rgba(255,255,255,.06);color:#fff}
+.indice a.ativo{background:rgba(255,255,255,.09);color:#fff;border-left-color:#37D08A}
+.indice em{font-family:var(--mono);font-style:normal;font-size:11px;color:#6F84A0}
+.indice a.ativo em{color:#37D08A}
+.indice a.completo em{color:#37D08A}
+.indice a.completo em::after{content:"✓";margin-left:2px}
+
+.palco{padding:0 0 90px;min-width:0}
+.faixa{max-width:940px;margin:0 auto;padding:0 34px}
+
+/* ---------- ABERTURA ---------- */
+.abertura{background:var(--tinta);color:#fff;padding:44px 0 40px;margin-bottom:22px}
+.olho{
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:#7F93AC;margin:0 0 12px
+}
+.abertura h1{
+  font-family:var(--display);font-weight:700;font-size:clamp(34px,5vw,50px);
+  line-height:1.02;letter-spacing:-.015em;margin:0 0 14px;max-width:20ch
+}
+.abertura p{margin:0;max-width:62ch;color:#B9C7D8;font-size:16px}
+
+/* token de valor de exemplo dentro do texto */
+.v{
+  font-family:var(--mono);font-size:.93em;background:#F0F2F5;color:#5A6B80;
+  padding:1px 6px;border-radius:4px;white-space:nowrap;border:1px solid var(--linha)
+}
+
+/* ---------- CONTROLES ---------- */
+.controles{max-width:940px;margin:0 auto;padding:0 34px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.botao{
+  font-family:var(--corpo);font-size:14px;font-weight:600;cursor:pointer;
+  border:1px solid var(--linha-forte);background:var(--branco);color:var(--tinta);
+  padding:9px 15px;border-radius:7px;transition:.15s
+}
+.botao:hover{border-color:var(--tinta-55);background:#F7F9FB}
+
+/* ---------- MÓDULO ---------- */
+.modulo{
+  background:var(--branco);border:1px solid var(--linha);border-radius:10px;
+  margin:16px auto 0;max-width:940px;overflow:hidden
+}
+.modulo>summary{
+  list-style:none;cursor:pointer;padding:17px 22px;display:grid;
+  grid-template-columns:auto 1fr auto;gap:15px;align-items:center;
+}
+.modulo>summary::-webkit-details-marker{display:none}
+.modulo>summary:hover{background:#FAFBFC}
+.selo{
+  font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--tinta-55);
+  border:1.5px solid var(--linha-forte);border-radius:6px;padding:5px 8px;line-height:1
+}
+.modulo[open] .selo{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+.modulo.completo>summary{background:var(--ok-fraco)}
+.modulo.completo .selo{background:var(--ok);border-color:var(--ok);color:#fff}
+.modulo h2{
+  font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:.005em;
+  margin:0;line-height:1.2
+}
+.modulo h2 small{display:block;font-family:var(--corpo);font-weight:400;font-size:13.2px;color:var(--tinta-55);margin-top:3px;letter-spacing:0}
+.contador{font-family:var(--mono);font-size:12px;color:var(--tinta-55);white-space:nowrap}
+.contador.pronto{color:var(--ok);font-weight:600}
+.modulo__corpo{padding:4px 22px 26px;border-top:1px solid var(--linha)}
+
+/* ---------- BLOCOS DE APOIO ---------- */
+.meta{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;
+  margin:20px 0 6px;padding:14px 16px;background:#F7F9FB;border:1px solid var(--linha);border-radius:8px
+}
+.meta div strong{
+  display:block;font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--tinta-55);margin-bottom:4px;font-weight:600
+}
+.meta div p{margin:0;font-size:14px}
+
+/* ---------- PASSO ---------- */
+.passo{display:grid;grid-template-columns:34px minmax(0,1fr);gap:14px;padding:20px 0 4px;border-top:1px solid #EDF0F4}
+.passo:first-of-type{border-top:0}
+.marca-passo{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:2px}
+.marca-passo>span{
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--tinta-55);
+  border:1.5px solid var(--linha-forte);border-radius:50%;width:26px;height:26px;
+  display:grid;place-items:center;line-height:1;background:var(--branco)
+}
+.passo.feito .marca-passo>span{background:var(--ok);border-color:var(--ok);color:#fff}
+.passo input[type=checkbox]{width:17px;height:17px;accent-color:var(--ok);cursor:pointer;margin:0}
+.passo h3{font-family:var(--corpo);font-weight:600;font-size:16.5px;margin:0 0 6px;line-height:1.35}
+.passo.feito h3{color:var(--tinta-55)}
+.passo p{margin:0 0 10px}
+.passo ul,.passo ol{margin:0 0 12px;padding-left:20px}
+.passo li{margin-bottom:5px}
+.caminho{
+  font-family:var(--mono);font-size:13px;background:#F4F6F9;border:1px solid var(--linha);
+  border-left:3px solid var(--tinta-55);border-radius:0 6px 6px 0;padding:8px 12px;margin:0 0 12px;
+  display:block;color:var(--tinta-80);overflow-x:auto;white-space:nowrap
+}
+code{font-family:var(--mono);font-size:.9em;background:#F0F2F5;padding:1.5px 5px;border-radius:4px;border:1px solid var(--linha)}
+
+/* trilhas alternativas (ex.: parceiro x administrador) */
+.trilhas{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:12px;margin:0 0 14px}
+.trilha{border:1px solid var(--linha);border-radius:8px;padding:12px 14px;background:#FAFBFC}
+.trilha b{
+  display:block;font-family:var(--display);font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--acao);margin-bottom:5px
+}
+.trilha>span{display:block;font-size:13px;color:var(--tinta-55);margin-bottom:7px}
+.trilha ul{margin:0;padding-left:18px;font-size:14px}
+.trilha li{margin-bottom:4px}
+
+/* tabela de valores exatos */
+.valores{width:100%;border-collapse:collapse;margin:0 0 13px;font-size:14px;border:1px solid var(--linha);border-radius:7px;overflow:hidden}
+.valores th{
+  text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tinta-55);background:#F7F9FB;padding:8px 12px;border-bottom:1px solid var(--linha);font-weight:600
+}
+.valores td{padding:8px 12px;border-bottom:1px solid #EDF0F4;vertical-align:top}
+.valores tr:last-child td{border-bottom:0}
+.valores td:first-child{width:38%;color:var(--tinta-80)}
+.valores td:last-child{font-family:var(--mono);font-size:13.2px}
+.valores.tres td:first-child{width:24%}
+.valores.tres td:nth-child(2){width:38%;font-family:var(--corpo);font-size:14px;color:var(--tinta)}
+
+/* avisos */
+.aviso{
+  display:grid;grid-template-columns:auto 1fr;gap:11px;align-items:start;
+  padding:11px 14px;border-radius:8px;margin:0 0 13px;font-size:14.2px;border:1px solid
+}
+.aviso b{font-family:var(--display);font-size:14px;letter-spacing:.02em;text-transform:uppercase;display:block;margin-bottom:2px}
+.aviso i{font-family:var(--mono);font-style:normal;font-size:14px;font-weight:600;line-height:1.2}
+.aviso p{margin:0}
+.aviso--atencao{background:var(--atencao-fraco);border-color:#EBD3A8;color:#5C3A00}
+.aviso--atencao i,.aviso--atencao b{color:var(--atencao)}
+.aviso--bloqueio{background:var(--bloqueio-fraco);border-color:#EFC5C1;color:#6B1712}
+.aviso--bloqueio i,.aviso--bloqueio b{color:var(--bloqueio)}
+.aviso--ok{background:var(--ok-fraco);border-color:#BFE0CE;color:#0C4E33}
+.aviso--ok i,.aviso--ok b{color:var(--ok)}
+
+/* validação */
+.checagem{border:1px solid var(--ok);border-left-width:3px;background:var(--ok-fraco);border-radius:0 8px 8px 0;padding:11px 14px;margin:0 0 13px}
+.checagem strong{font-family:var(--display);font-size:13.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--ok);display:block;margin-bottom:4px}
+.checagem p{margin:0;font-size:14.2px;color:#0C4E33}
+
+/* ---------- MAPA DE INTERFACE ---------- */
+.mapa{border:1px solid var(--linha);border-radius:9px;overflow:hidden;margin:0 0 14px;background:var(--branco)}
+.mapa svg{display:block;width:100%;height:auto;background:#FBFCFD}
+.mapa figcaption{
+  font-family:var(--mono);font-size:11.5px;color:var(--tinta-55);padding:8px 13px;
+  border-top:1px solid var(--linha);background:#F7F9FB
+}
+.j-quadro{fill:#fff;stroke:#C9D2DD;stroke-width:1}
+.j-barra{fill:#EFF2F6}
+.j-menu{fill:#F5F7FA}
+.j-bloco{fill:#F0F3F7;stroke:#DDE3EA;stroke-width:1}
+.j-realce{fill:#EAF1FD;stroke:#1F5FD0;stroke-width:1.6}
+.j-btn{fill:#1F5FD0}
+.j-txt{font-family:"IBM Plex Sans",sans-serif;font-size:9.5px;fill:#3E5068}
+.j-txt-b{font-family:"IBM Plex Sans",sans-serif;font-size:10px;font-weight:600;fill:#0F1F35}
+.j-txt-p{font-family:"IBM Plex Sans",sans-serif;font-size:8.5px;fill:#8494A8}
+.j-txt-br{font-family:"IBM Plex Sans",sans-serif;font-size:9.5px;font-weight:600;fill:#fff}
+.pino circle{fill:#A81F17}
+.pino text{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;fill:#fff}
+
+/* ---------- RODAPÉ ---------- */
+.rodape{max-width:940px;margin:34px auto 0;padding:22px 34px;border-top:1px solid var(--linha);color:var(--tinta-55);font-size:13.2px}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width:900px){
+  .casca{grid-template-columns:1fr}
+  .lateral{position:static;height:auto;padding-bottom:16px}
+  .indice{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .faixa,.controles,.rodape{padding-left:18px;padding-right:18px}
+  .modulo>summary{grid-template-columns:auto 1fr;gap:11px}
+  .contador{grid-column:2;margin-top:-4px}
+}
+
+/* ---------- IMPRESSÃO ---------- */
+@page{size:A4;margin:13mm 12mm}
+@media print{
+  body{background:#fff;font-size:10.4pt;line-height:1.48}
+  .lateral,.controles{display:none!important}
+  .casca{display:block}
+  .faixa,.modulo,.rodape{max-width:none;margin:0;padding-left:0;padding-right:0}
+  .abertura{background:#fff;color:var(--tinta);padding:0 0 12pt;margin-bottom:10pt;border-bottom:2px solid var(--tinta)}
+  .abertura h1{font-size:26pt;margin-bottom:6pt}
+  .abertura p,.olho{color:var(--tinta-55)}
+  .modulo{border:0;border-radius:0;page-break-before:always;break-before:page;margin-top:0}
+  .modulo>summary{padding:0 0 8pt;border-bottom:2px solid var(--tinta);background:none!important}
+  .modulo__corpo{padding:0;border:0}
+  .contador{display:none}
+  .passo,.aviso,.checagem,.mapa,.valores,.meta,.trilhas{page-break-inside:avoid;break-inside:avoid}
+  .passo{padding-top:11pt}
+  .marca-passo>span{border-color:var(--tinta-55)}
+  .mapa svg{max-height:150mm}
+  a{color:var(--tinta);text-decoration:none}
+  .rodape{border-top:1px solid var(--linha);margin-top:14pt}
+}
+</style>
+</head>
+<body>
+<div class="casca">
+
+<nav class="lateral" aria-label="Índice do manual">
+  <div class="lateral__marca">
+    <b>POP de Setup</b>
+    <span>Documento interno · v1.0</span>
+  </div>
+  <div class="progresso">
+    <div class="progresso__topo"><span>CONCLUÍDO</span><b id="pct">0%</b></div>
+    <div class="barra"><i id="barra"></i></div>
+  </div>
+  <ul class="indice" id="indice"></ul>
+</nav>
+
+<main class="palco">
+  <header class="abertura">
+    <div class="faixa">
+      <p class="olho">Procedimento operacional padrão · Implantação de conta</p>
+      <h1>Todo cliente novo entra pela mesma porta.</h1>
+      <p>Onze módulos, na ordem em que precisam ser executados. Vá marcando cada passo conforme executa — a lateral mostra o quanto falta e qual módulo já fechou. Quando o menu da plataforma não bater com o descrito aqui, procure pela função: o caminho muda, o conceito não.</p>
+    </div>
+  </header>
+
+  <div class="controles">
+    <button class="botao" onclick="abrirTudo(true)">Abrir todos os módulos</button>
+    <button class="botao" onclick="abrirTudo(false)">Fechar todos</button>
+    <button class="botao" onclick="limparProgresso()">Zerar marcações</button>
+  </div>
+
+<!-- ========== 00 ========== -->
+<details class="modulo" id="m00" open>
+  <summary><span class="selo">00</span><h2>Acessos, briefing e registro da conta<small>O que precisa estar em mãos antes de tocar em qualquer plataforma</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Sair deste módulo com todos os acessos liberados e a conta registrada no controle interno.</p></div>
+      <div><strong>Pré-requisito</strong><p>Contrato assinado e reunião de kickoff realizada.</p></div>
+      <div><strong>Tempo médio</strong><p>1 a 3 dias — depende da resposta do cliente.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Levante o briefing mínimo</h3>
+        <p>Sem essas respostas o setup trava no meio. Colete tudo de uma vez, por escrito.</p>
+        <table class="valores">
+          <tr><th>Informação</th><th>Para que serve</th></tr>
+          <tr><td>Produto/serviço e ticket médio</td><td>Definir meta de CPA e valor de conversão</td></tr>
+          <tr><td>Qual é a conversão que vale dinheiro</td><td>Escolher o evento principal (lead, compra, agendamento)</td></tr>
+          <tr><td>Raio de atendimento / cidades</td><td>Segmentação geográfica</td></tr>
+          <tr><td>CNPJ, razão social e responsável financeiro</td><td>Faturamento no Google e no Meta</td></tr>
+          <tr><td>Onde o lead cai hoje</td><td>WhatsApp, CRM, e-mail, formulário</td></tr>
+          <tr><td>Número do WhatsApp comercial</td><td>Vínculo na Meta e campanhas de mensagem</td></tr>
+          <tr><td>Verba mensal e data de virada</td><td>Orçamento diário e ciclo de relatório</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Defina por qual caminho você vai entrar</h3>
+        <p>Nem todo cliente chega com estrutura pronta. Escolha a trilha e registre qual foi — muda o que você pode fazer e o que precisa documentar depois.</p>
+        <div class="trilhas">
+          <div class="trilha">
+            <b>Trilha A · Parceiro</b>
+            <span>O cliente já tem portfólio empresarial e ativos criados.</span>
+            <ul>
+              <li>Ele nos adiciona como parceiros, usando o ID da nossa BM</li>
+              <li>Os ativos continuam no nome dele</li>
+              <li>Saída limpa quando a parceria terminar: basta remover o parceiro</li>
+              <li>É o caminho preferido sempre que for possível</li>
+            </ul>
+          </div>
+          <div class="trilha">
+            <b>Trilha B · Administrador</b>
+            <span>Não existe nada montado e vamos criar do zero.</span>
+            <ul>
+              <li>Entramos como administrador pelo perfil pessoal de quem está executando</li>
+              <li>Use um perfil de trabalho, com verificação em duas etapas ativa</li>
+              <li>Assim que o portfólio existir, adicione o cliente como administrador também</li>
+              <li>Registre no controle da conta qual perfil está com o acesso</li>
+              <li>Quando a estrutura estabilizar, migre para acesso de parceiro</li>
+            </ul>
+          </div>
+        </div>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>O risco da Trilha B</b><p>O acesso fica preso a uma pessoa, não à agência. Se essa pessoa sair da equipe ou perder o perfil, a conta vai junto. Por isso: sempre mais de um administrador, sempre anotado no controle interno, e sempre com o cliente também como admin.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Peça os acessos das demais plataformas</h3>
+        <table class="valores">
+          <tr><th>Plataforma</th><th>Nível que pedimos</th></tr>
+          <tr><td>Meta — portfólio empresarial</td><td>Parceiro (trilha A) ou administrador (trilha B)</td></tr>
+          <tr><td>Google Ads</td><td>Administrador ou vínculo via MCC</td></tr>
+          <tr><td>Google Analytics</td><td>Administrador na propriedade</td></tr>
+          <tr><td>Google Tag Manager</td><td>Publicar (contêiner)</td></tr>
+          <tr><td>Perfil da Empresa no Google</td><td>Gerente</td></tr>
+          <tr><td>Site / hospedagem</td><td>Admin ou editor com acesso ao &lt;head&gt;</td></tr>
+          <tr><td>Painel do domínio (DNS)</td><td>Acesso para criar registro TXT</td></tr>
+        </table>
+        <div class="aviso aviso--bloqueio"><i>✕</i><div><b>Nunca faça</b><p>Não trabalhe com o login e a senha do cliente — acesso é por convite ou por perfil próprio. E não crie a conta de anúncios dentro do nosso portfólio: os ativos são do cliente e precisam morar no portfólio dele.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>4</span><input type="checkbox"></div>
+      <div>
+        <h3>Mande a mensagem padrão de solicitação</h3>
+        <p>Copie, troque o nome e envie. Uma mensagem só, com tudo — não pingue pedido por pedido.</p>
+        <span class="caminho">Oi [nome]! Para começar o setup preciso que você me libere alguns acessos. Vou te mandar os convites por e-mail — é só aceitar. São eles: (1) portfólio empresarial da Meta, (2) Google Ads, (3) Google Analytics, (4) acesso ao painel do site e (5) ao painel do domínio. Se não souber onde fica algum, me chama que eu faço junto com você em 10 minutos de chamada.</span>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>5</span><input type="checkbox"></div>
+      <div>
+        <h3>Abra o registro da conta no controle interno</h3>
+        <p>Uma linha por cliente, preenchida conforme os IDs vão sendo criados nos próximos módulos. É o que permite outra pessoa da equipe assumir a conta sem perguntar nada.</p>
+        <table class="valores">
+          <tr><th>Campo</th><th>Preenchido no módulo</th></tr>
+          <tr><td>Cliente e domínio</td><td>00</td></tr>
+          <tr><td>Trilha de acesso (A ou B) e perfil responsável</td><td>00</td></tr>
+          <tr><td>ID do contêiner GTM</td><td>03</td></tr>
+          <tr><td>ID de medição do GA4</td><td>04</td></tr>
+          <tr><td>ID da conta Google Ads</td><td>05</td></tr>
+          <tr><td>ID do portfólio, do conjunto de dados e da conta WhatsApp</td><td>06</td></tr>
+          <tr><td>Data do setup e quem executou</td><td>10</td></tr>
+        </table>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>Você entra em todas as plataformas do cliente sem pedir nada a ninguém, e o registro da conta já existe no controle interno com cliente, domínio e trilha de acesso preenchidos.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 01 ========== -->
+<details class="modulo" id="m01">
+  <summary><span class="selo">01</span><h2>Domínio, DNS e hospedagem<small>A base de tudo: se o domínio não estiver sob controle, rastreamento nenhum funciona</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Domínio ativo, com HTTPS, apontando para a hospedagem certa e com acesso ao DNS.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulo 00 concluído.</p></div>
+      <div><strong>Tempo médio</strong><p>30 min + até 24h de propagação.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Confirme quem é o dono do domínio</h3>
+        <p>Consulte o registro em <a href="https://registro.br" target="_blank" rel="noopener">registro.br</a> (para .com.br) e veja se o CNPJ bate com o do cliente. Domínio no nome da agência anterior é problema clássico — resolva antes de investir em qualquer campanha.</p>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Mapeie os registros DNS que você vai precisar</h3>
+        <p>Você vai voltar aqui em pelo menos dois momentos: para apontar o site e para verificar o domínio na Meta.</p>
+        <figure class="mapa">
+          <svg viewBox="0 0 700 250" role="img" aria-label="Esquema do painel de DNS com os registros típicos">
+            <rect x="8" y="8" width="684" height="234" rx="7" class="j-quadro"/>
+            <rect x="8" y="8" width="684" height="34" rx="7" class="j-barra"/>
+            <rect x="8" y="34" width="684" height="8" class="j-barra"/>
+            <text x="24" y="30" class="j-txt-b">Zona DNS — cliente.com.br</text>
+            <rect x="580" y="16" width="94" height="19" rx="4" class="j-btn"/>
+            <text x="601" y="29" class="j-txt-br">Adicionar registro</text>
+            <g class="pino"><circle cx="674" cy="16" r="9"/><text x="671" y="19.5">1</text></g>
+
+            <rect x="24" y="56" width="652" height="24" class="j-bloco"/>
+            <text x="36" y="72" class="j-txt-b">TIPO</text><text x="110" y="72" class="j-txt-b">NOME</text>
+            <text x="250" y="72" class="j-txt-b">VALOR</text><text x="600" y="72" class="j-txt-b">TTL</text>
+
+            <line x1="24" y1="104" x2="676" y2="104" class="j-linha" stroke="#E3E8EE"/>
+            <text x="36" y="98" class="j-txt">A</text><text x="110" y="98" class="j-txt">@</text>
+            <text x="250" y="98" class="j-txt">191.xxx.xxx.xxx (IP da hospedagem)</text><text x="600" y="98" class="j-txt">3600</text>
+
+            <line x1="24" y1="130" x2="676" y2="130" stroke="#E3E8EE"/>
+            <text x="36" y="124" class="j-txt">CNAME</text><text x="110" y="124" class="j-txt">www</text>
+            <text x="250" y="124" class="j-txt">cliente.com.br</text><text x="600" y="124" class="j-txt">3600</text>
+
+            <rect x="24" y="134" width="652" height="26" class="j-realce"/>
+            <text x="36" y="151" class="j-txt-b">TXT</text><text x="110" y="151" class="j-txt-b">@</text>
+            <text x="250" y="151" class="j-txt-b">facebook-domain-verification=xxxxxxxx</text><text x="600" y="151" class="j-txt-b">3600</text>
+            <g class="pino"><circle cx="24" cy="147" r="9"/><text x="21" y="150.5">2</text></g>
+
+            <line x1="24" y1="186" x2="676" y2="186" stroke="#E3E8EE"/>
+            <text x="36" y="180" class="j-txt">TXT</text><text x="110" y="180" class="j-txt">@</text>
+            <text x="250" y="180" class="j-txt">google-site-verification=xxxxxxxx</text><text x="600" y="180" class="j-txt">3600</text>
+
+            <line x1="24" y1="212" x2="676" y2="212" stroke="#E3E8EE"/>
+            <text x="36" y="206" class="j-txt">MX</text><text x="110" y="206" class="j-txt">@</text>
+            <text x="250" y="206" class="j-txt">não mexa sem falar com o cliente — é o e-mail dele</text><text x="600" y="206" class="j-txt">3600</text>
+            <g class="pino"><circle cx="24" cy="206" r="9"/><text x="21" y="209.5">3</text></g>
+          </svg>
+          <figcaption>1 · onde criar · 2 · TXT de verificação da Meta (módulo 06) · 3 · registros MX = e-mail, não toque</figcaption>
+        </figure>
+        <div class="aviso aviso--bloqueio"><i>✕</i><div><b>Risco alto</b><p>Alterar ou apagar registros MX derruba o e-mail da empresa inteira. Antes de mexer em qualquer zona DNS, tire um print da configuração atual e guarde.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Garanta HTTPS e uma única versão canônica</h3>
+        <ul>
+          <li>Certificado SSL ativo (cadeado no navegador).</li>
+          <li>Redirecionamento de <code>http://</code> para <code>https://</code>.</li>
+          <li>Escolha <em>uma</em> versão — com ou sem <code>www</code> — e redirecione a outra.</li>
+        </ul>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Por que importa</b><p>Duas versões vivas do site significam cookies separados, sessões quebradas no GA4 e conversões contadas pela metade.</p></div></div>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>Digite as quatro variações (com/sem www, http/https) e todas caem no mesmo endereço final com cadeado.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 02 ========== -->
+<details class="modulo" id="m02">
+  <summary><span class="selo">02</span><h2>Site e página de destino<small>A página precisa estar pronta para receber tráfego pago antes de gastar o primeiro real</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Página rápida, mensurável e com caminho de conversão claro.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulo 01 concluído.</p></div>
+      <div><strong>Tempo médio</strong><p>2h em página existente · 1 a 3 dias em página nova.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Audite a página que já existe</h3>
+        <p>Rode a página em <a href="https://pagespeed.web.dev" target="_blank" rel="noopener">PageSpeed Insights</a> e anote o resultado de celular — é onde está a maior parte do tráfego pago.</p>
+        <table class="valores">
+          <tr><th>Item</th><th>Meta mínima</th></tr>
+          <tr><td>LCP (carregamento do conteúdo principal)</td><td>abaixo de 2,5s</td></tr>
+          <tr><td>Peso total da página</td><td>abaixo de 2 MB</td></tr>
+          <tr><td>Imagens</td><td>WebP, comprimidas, com largura definida</td></tr>
+          <tr><td>Primeira dobra no celular</td><td>promessa + botão visível sem rolar</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Prepare os quatro pontos de conversão para serem rastreáveis</h3>
+        <p>WhatsApp, telefone, e-mail e formulário — é esse o conjunto que a gente mede em praticamente todo cliente. Rastreamento fácil começa no HTML, não no Tag Manager.</p>
+        <table class="valores">
+          <tr><th>Ponto de conversão</th><th>Como deixar pronto</th></tr>
+          <tr><td>WhatsApp</td><td>link direto <code>https://wa.me/55DDDNUMERO</code> — não use script que abre em pop-up sem URL</td></tr>
+          <tr><td>Telefone</td><td>link <code>tel:+55DDDNUMERO</code></td></tr>
+          <tr><td>E-mail</td><td>link <code>mailto:contato@cliente.com.br</code></td></tr>
+          <tr><td>Formulário</td><td>redirecionar para uma página de obrigado com URL própria (<code>/obrigado</code>)</td></tr>
+          <tr><td>Botões principais</td><td>dar um ID único a cada um (<code>id="btn-orcamento"</code>)</td></tr>
+        </table>
+        <div class="aviso aviso--ok"><i>✓</i><div><b>Regra de ouro</b><p>Página de obrigado com URL própria é a forma mais confiável de medir lead de formulário. Quando puder escolher, escolha ela em vez de escutar o envio do formulário.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Publique política de privacidade e aviso de cookies</h3>
+        <p>Exigência da LGPD e, na prática, requisito para rodar remarketing com tranquilidade. A política precisa dizer que o site usa cookies de terceiros do Google e da Meta para publicidade, e como o titular pede exclusão dos dados.</p>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Atenção</b><p>Se o cliente atende ou anuncia para a Europa, o banner tem que integrar com o Modo de Consentimento v2 no GTM (módulo 03, passo 8). No Brasil não é obrigatório, mas já deixe o terreno preparado.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>4</span><input type="checkbox"></div>
+      <div>
+        <h3>Confirme que você consegue injetar código no &lt;head&gt;</h3>
+        <p>Sem isso, o módulo 03 inteiro para. Teste antes de prometer prazo.</p>
+        <table class="valores">
+          <tr><th>Plataforma</th><th>Onde fica</th></tr>
+          <tr><td>WordPress</td><td>plugin GTM4WP, ou tema filho no <code>header.php</code></td></tr>
+          <tr><td>Elementor</td><td>Elementor → Configurações → Código personalizado</td></tr>
+          <tr><td>Wix / Squarespace</td><td>Configurações → Ferramentas de marketing → Código personalizado</td></tr>
+          <tr><td>Shopify</td><td>Tema → Editar código → <code>theme.liquid</code></td></tr>
+          <tr><td>Página feita em código</td><td>direto no <code>index.html</code> ou no layout base</td></tr>
+        </table>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>Você inseriu um comentário HTML de teste no head, abriu o código-fonte da página no navegador e encontrou o comentário lá.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 03 ========== -->
+<details class="modulo" id="m03">
+  <summary><span class="selo">03</span><h2>Google Tag Manager<small>O centro de distribuição. Tudo que for medir passa por aqui — nada de código solto no site</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Contêiner instalado, variáveis ligadas, os quatro eventos de conversão disparando e versão publicada.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulos 01 e 02 concluídos.</p></div>
+      <div><strong>Tempo médio</strong><p>1h30 a 3h.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Crie a conta e o contêiner</h3>
+        <span class="caminho">tagmanager.google.com → Criar conta</span>
+        <table class="valores">
+          <tr><th>Campo</th><th>Valor</th></tr>
+          <tr><td>Nome da conta</td><td><span class="v">Nome do cliente</span></td></tr>
+          <tr><td>País</td><td>Brasil</td></tr>
+          <tr><td>Nome do contêiner</td><td><span class="v">cliente.com.br</span></td></tr>
+          <tr><td>Plataforma de destino</td><td>Web</td></tr>
+        </table>
+        <p>Anote o ID gerado — <span class="v">GTM-XXXXXXX</span> — no registro da conta.</p>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Uma conta por cliente</b><p>Não crie todos os clientes como contêineres dentro de uma conta só. Conta separada por cliente é o que permite entregar o ativo para ele no dia que a parceria acabar.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Instale os dois trechos de código no site</h3>
+        <p>O GTM entrega dois blocos, e os dois são obrigatórios:</p>
+        <ul>
+          <li><strong>Bloco 1</strong> — o mais alto possível dentro do <code>&lt;head&gt;</code>.</li>
+          <li><strong>Bloco 2</strong> — logo depois da abertura do <code>&lt;body&gt;</code>.</li>
+        </ul>
+        <p>Se estiver usando plugin (GTM4WP), basta colar o ID <span class="v">GTM-XXXXXXX</span> no campo do plugin — ele cuida dos dois blocos.</p>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Conheça o painel antes de sair criando</h3>
+        <figure class="mapa">
+          <svg viewBox="0 0 700 344" role="img" aria-label="Esquema do espaço de trabalho do Google Tag Manager com as tags do GA4 e do Google Ads">
+            <rect x="8" y="8" width="684" height="328" rx="7" class="j-quadro"/>
+            <rect x="8" y="8" width="684" height="36" rx="7" class="j-barra"/>
+            <rect x="8" y="36" width="684" height="8" class="j-barra"/>
+            <text x="24" y="31" class="j-txt-b">Tag Manager</text>
+            <text x="112" y="31" class="j-txt-p">cliente.com.br — GTM-XXXXXXX</text>
+            <rect x="470" y="15" width="76" height="21" rx="4" fill="#fff" stroke="#C9D2DD"/>
+            <text x="488" y="29" class="j-txt">Visualizar</text>
+            <g class="pino"><circle cx="470" cy="15" r="9"/><text x="467" y="18.5">4</text></g>
+            <rect x="556" y="15" width="66" height="21" rx="4" class="j-btn"/>
+            <text x="574" y="29" class="j-txt-br">Enviar</text>
+            <g class="pino"><circle cx="622" cy="15" r="9"/><text x="619" y="18.5">5</text></g>
+
+            <rect x="8" y="44" width="152" height="292" class="j-menu"/>
+            <text x="26" y="70" class="j-txt-b">Espaço de trabalho</text>
+            <rect x="16" y="82" width="136" height="24" rx="4" class="j-realce"/>
+            <text x="26" y="98" class="j-txt-b">Tags</text>
+            <g class="pino"><circle cx="16" cy="94" r="9"/><text x="13" y="97.5">1</text></g>
+            <rect x="16" y="110" width="136" height="24" rx="4" class="j-realce"/>
+            <text x="26" y="126" class="j-txt-b">Acionadores</text>
+            <g class="pino"><circle cx="16" cy="122" r="9"/><text x="13" y="125.5">2</text></g>
+            <rect x="16" y="138" width="136" height="24" rx="4" class="j-realce"/>
+            <text x="26" y="154" class="j-txt-b">Variáveis</text>
+            <g class="pino"><circle cx="16" cy="150" r="9"/><text x="13" y="153.5">3</text></g>
+            <text x="26" y="182" class="j-txt">Pastas</text>
+            <text x="26" y="204" class="j-txt">Modelos</text>
+            <text x="26" y="226" class="j-txt">Versões</text>
+            <text x="26" y="248" class="j-txt">Administrador</text>
+
+            <text x="182" y="72" class="j-txt-b">Tags</text>
+            <rect x="600" y="58" width="76" height="21" rx="4" class="j-btn"/>
+            <text x="619" y="72" class="j-txt-br">Nova</text>
+
+            <rect x="182" y="90" width="494" height="26" class="j-bloco"/>
+            <text x="194" y="107" class="j-txt-b">NOME</text><text x="440" y="107" class="j-txt-b">TIPO</text><text x="574" y="107" class="j-txt-b">ACIONAMENTO</text>
+
+            <rect x="182" y="144" width="494" height="56" fill="#EAF1FD"/>
+            <rect x="182" y="144" width="3" height="56" fill="#1F5FD0"/>
+            <rect x="182" y="228" width="494" height="56" fill="#FCF1DF"/>
+            <rect x="182" y="228" width="3" height="56" fill="#9A5B00"/>
+
+            <line x1="182" y1="144" x2="676" y2="144" stroke="#E3E8EE"/>
+            <text x="194" y="134" class="j-txt">GA4 — Tag do Google</text><text x="440" y="134" class="j-txt">Tag do Google</text><text x="574" y="134" class="j-txt">Initialization</text>
+
+            <line x1="182" y1="172" x2="676" y2="172" stroke="#D3E1F7"/>
+            <text x="194" y="162" class="j-txt-b">GA4 — evento — clique_whatsapp</text><text x="440" y="162" class="j-txt">Evento do GA4</text><text x="574" y="162" class="j-txt">Clique WhatsApp</text>
+            <text x="194" y="190" class="j-txt-b">GA4 — evento — lead_formulario</text><text x="440" y="190" class="j-txt">Evento do GA4</text><text x="574" y="190" class="j-txt">Página obrigado</text>
+            <g class="pino"><circle cx="182" cy="172" r="9"/><text x="179" y="175.5">6</text></g>
+
+            <line x1="182" y1="200" x2="676" y2="200" stroke="#E3E8EE"/>
+            <text x="194" y="218" class="j-txt">Ads — Vinculador de conversões</text><text x="440" y="218" class="j-txt">Vinculador</text><text x="574" y="218" class="j-txt">All Pages</text>
+            <line x1="182" y1="228" x2="676" y2="228" stroke="#E3E8EE"/>
+
+            <line x1="182" y1="256" x2="676" y2="256" stroke="#EBD3A8"/>
+            <text x="194" y="246" class="j-txt-b">Ads — conversão — whatsapp</text><text x="440" y="246" class="j-txt">Conversão do Ads</text><text x="574" y="246" class="j-txt">Clique WhatsApp</text>
+            <text x="194" y="274" class="j-txt-b">Ads — conversão — formulario</text><text x="440" y="274" class="j-txt">Conversão do Ads</text><text x="574" y="274" class="j-txt">Página obrigado</text>
+            <g class="pino"><circle cx="182" cy="256" r="9"/><text x="179" y="259.5">7</text></g>
+
+            <line x1="182" y1="284" x2="676" y2="284" stroke="#E3E8EE"/>
+            <text x="194" y="302" class="j-txt">Meta — Pixel base</text><text x="440" y="302" class="j-txt">HTML personalizado</text><text x="574" y="302" class="j-txt">All Pages</text>
+
+            <text x="194" y="324" class="j-txt-p">O mesmo acionador alimenta a tag do GA4 e a tag do Google Ads — são duas tags, não uma.</text>
+          </svg>
+          <figcaption>1 · Tags: o que dispara · 2 · Acionadores: quando dispara · 3 · Variáveis: com quais dados · 4 · testar antes · 5 · publicar · 6 · eventos do GA4 · 7 · conversões do Google Ads, no mesmo acionador</figcaption>
+        </figure>
+        <p>A lógica nunca muda: <strong>uma tag</strong> precisa de <strong>um acionador</strong>, e ambos podem usar <strong>variáveis</strong> para saber o contexto. Repare no par realçado: cada conversão gera <em>duas</em> tags — uma manda o evento para o GA4, outra manda a conversão para o Google Ads, e as duas penduram no mesmo acionador.</p>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>4</span><input type="checkbox"></div>
+      <div>
+        <h3>Ative as variáveis integradas</h3>
+        <span class="caminho">Variáveis → Configurar (variáveis integradas)</span>
+        <p>Marque tudo destas categorias — não custa nada e evita ter que voltar aqui depois:</p>
+        <ul>
+          <li><strong>Cliques:</strong> Click Element, Click Classes, Click ID, Click Target, Click URL, Click Text</li>
+          <li><strong>Formulários:</strong> Form Element, Form Classes, Form ID, Form Target, Form URL, Form Text</li>
+          <li><strong>Rolagem:</strong> Scroll Depth Threshold, Scroll Depth Units, Scroll Direction</li>
+          <li><strong>Páginas:</strong> Page URL, Page Hostname, Page Path, Referrer</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>5</span><input type="checkbox"></div>
+      <div>
+        <h3>Crie as variáveis constantes dos IDs</h3>
+        <p>Em vez de digitar o ID de medição em cada tag, crie uma constante e referencie. No dia que trocar o ID, você troca em um lugar só.</p>
+        <span class="caminho">Variáveis → Variáveis definidas pelo usuário → Nova → Constante</span>
+        <table class="valores">
+          <tr><th>Nome da variável</th><th>Valor</th></tr>
+          <tr><td>const — ID GA4</td><td><span class="v">G-XXXXXXXXXX</span></td></tr>
+          <tr><td>const — ID Google Ads</td><td><span class="v">AW-000000000</span></td></tr>
+          <tr><td>const — ID Pixel Meta</td><td><span class="v">000000000000000</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>6</span><input type="checkbox"></div>
+      <div>
+        <h3>Monte os quatro acionadores de conversão</h3>
+        <p>WhatsApp, telefone, e-mail e formulário. São esses que a gente reaproveita nos módulos 04, 05 e 06 — crie uma vez e pendure todas as tags neles.</p>
+        <table class="valores tres">
+          <tr><th>Acionador</th><th>Tipo</th><th>Condição</th></tr>
+          <tr><td>Clique WhatsApp</td><td>Clique — apenas links</td><td>Click URL · contém · <code>wa.me</code></td></tr>
+          <tr><td>Clique telefone</td><td>Clique — apenas links</td><td>Click URL · contém · <code>tel:</code></td></tr>
+          <tr><td>Clique e-mail</td><td>Clique — apenas links</td><td>Click URL · contém · <code>mailto:</code></td></tr>
+          <tr><td>Página obrigado</td><td>Visualização de página</td><td>Page Path · contém · <code>/obrigado</code></td></tr>
+        </table>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Cuidado com cliques que saem da página</b><p>WhatsApp, telefone e e-mail abrem outro aplicativo. Marque "Aguardar tags" com uns 2000ms no acionador, senão a página sai antes da tag disparar e você perde a conversão.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>7</span><input type="checkbox"></div>
+      <div>
+        <h3>Adicione o Vinculador de conversões</h3>
+        <p>Tag do tipo <strong>Vinculador de conversões</strong>, acionador <strong>All Pages</strong>. Ela grava os cookies de clique (gclid) em primeira parte. Sem ela, o Google Ads perde parte das conversões nos navegadores que bloqueiam cookies de terceiros.</p>
+        <div class="aviso aviso--ok"><i>✓</i><div><b>Faça sempre</b><p>Esta tag entra em todo contêiner, em todo cliente, sem exceção. Custa 30 segundos e recupera conversão que você nem sabia que estava perdendo.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>8</span><input type="checkbox"></div>
+      <div>
+        <h3>Configure o Modo de Consentimento, se for o caso</h3>
+        <p>Se o cliente anuncia para a Europa, é obrigatório. No Brasil, é boa prática de LGPD. Use um modelo de CMP da galeria do GTM ou o template do seu banner de cookies, e configure os quatro sinais: <code>ad_storage</code>, <code>analytics_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code>.</p>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>9</span><input type="checkbox"></div>
+      <div>
+        <h3>Teste no Modo de visualização e só depois publique</h3>
+        <p>Clique em <strong>Visualizar</strong>, informe a URL, e execute as quatro ações na página real: clique no WhatsApp, no telefone, no e-mail e envie o formulário. Confira se cada tag aparece em "Tags acionadas".</p>
+        <p>Só então: <strong>Enviar</strong> → nome da versão no padrão <code>Setup inicial — 26/08/2026</code> → descrição do que mudou → Publicar.</p>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>A extensão Tag Assistant mostra o contêiner <span class="v">GTM-XXXXXXX</span> conectado no site publicado, e as quatro ações de conversão acionam as tags certas — testadas por você, no celular e no computador.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 04 ========== -->
+<details class="modulo" id="m04">
+  <summary><span class="selo">04</span><h2>Google Analytics 4<small>A fonte de verdade sobre o que acontece depois do clique</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Propriedade recebendo dados limpos, com os quatro principais eventos marcados e vinculada ao Google Ads.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulo 03 publicado.</p></div>
+      <div><strong>Tempo médio</strong><p>1h a 2h.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Crie a propriedade com os parâmetros certos</h3>
+        <span class="caminho">analytics.google.com → Administrador → Criar → Propriedade</span>
+        <table class="valores">
+          <tr><th>Campo</th><th>Valor</th></tr>
+          <tr><td>Nome da propriedade</td><td><span class="v">Nome do cliente</span></td></tr>
+          <tr><td>Fuso horário</td><td>Brasil — (GMT-03:00) São Paulo</td></tr>
+          <tr><td>Moeda</td><td>Real brasileiro (BRL)</td></tr>
+        </table>
+        <div class="aviso aviso--bloqueio"><i>✕</i><div><b>Não dá para desfazer direito</b><p>Fuso e moeda mudam os dados só a partir da alteração — o histórico fica bagunçado. Acerte agora.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Crie o fluxo de dados da Web</h3>
+        <span class="caminho">Administrador → Fluxos de dados → Adicionar fluxo → Web</span>
+        <p>URL: <span class="v">cliente.com.br</span> · Nome: Site principal. Anote o ID de medição gerado — <span class="v">G-XXXXXXXXXX</span> — no registro da conta.</p>
+        <figure class="mapa">
+          <svg viewBox="0 0 700 290" role="img" aria-label="Esquema da área de administração do Google Analytics 4">
+            <rect x="8" y="8" width="684" height="274" rx="7" class="j-quadro"/>
+            <rect x="8" y="8" width="684" height="34" rx="7" class="j-barra"/>
+            <rect x="8" y="34" width="684" height="8" class="j-barra"/>
+            <text x="24" y="30" class="j-txt-b">Analytics — Administrador</text>
+            <text x="200" y="30" class="j-txt-p">Propriedade: cliente.com.br (G-XXXXXXXXXX)</text>
+
+            <rect x="8" y="42" width="200" height="240" class="j-menu"/>
+            <text x="24" y="64" class="j-txt-p">COLETA E MODIFICAÇÃO DE DADOS</text>
+            <rect x="16" y="72" width="184" height="22" rx="4" class="j-realce"/>
+            <text x="26" y="87" class="j-txt-b">Fluxos de dados</text>
+            <g class="pino"><circle cx="16" cy="83" r="9"/><text x="13" y="86.5">1</text></g>
+            <text x="26" y="112" class="j-txt">Importação de dados</text>
+            <rect x="16" y="120" width="184" height="22" rx="4" class="j-realce"/>
+            <text x="26" y="135" class="j-txt-b">Retenção de dados</text>
+            <g class="pino"><circle cx="16" cy="131" r="9"/><text x="13" y="134.5">2</text></g>
+            <rect x="16" y="148" width="184" height="22" rx="4" class="j-realce"/>
+            <text x="26" y="163" class="j-txt-b">Filtros de dados</text>
+            <g class="pino"><circle cx="16" cy="159" r="9"/><text x="13" y="162.5">3</text></g>
+            <text x="24" y="190" class="j-txt-p">EXIBIÇÃO DE DADOS</text>
+            <rect x="16" y="198" width="184" height="22" rx="4" class="j-realce"/>
+            <text x="26" y="213" class="j-txt-b">Principais eventos</text>
+            <g class="pino"><circle cx="16" cy="209" r="9"/><text x="13" y="212.5">4</text></g>
+            <text x="26" y="238" class="j-txt">Públicos-alvo</text>
+            <text x="24" y="262" class="j-txt-p">VINCULAÇÕES DE PRODUTOS</text>
+            <rect x="16" y="268" width="184" height="10" rx="3" class="j-realce"/>
+            <g class="pino"><circle cx="16" cy="273" r="9"/><text x="13" y="276.5">5</text></g>
+
+            <text x="230" y="66" class="j-txt-b">Fluxos de dados</text>
+            <rect x="230" y="80" width="446" height="52" rx="6" class="j-bloco"/>
+            <text x="246" y="100" class="j-txt-b">Site principal — cliente.com.br</text>
+            <text x="246" y="118" class="j-txt">ID de medição: G-XXXXXXXXXX</text>
+            <rect x="560" y="94" width="100" height="22" rx="4" fill="#fff" stroke="#C9D2DD"/>
+            <text x="570" y="109" class="j-txt">Medição avançada</text>
+            <g class="pino"><circle cx="560" cy="94" r="9"/><text x="557" y="97.5">6</text></g>
+
+            <text x="230" y="160" class="j-txt-b">Medição avançada — o que já vem ligado</text>
+            <text x="246" y="182" class="j-txt">✓ Visualizações de página</text>
+            <text x="246" y="202" class="j-txt">✓ Rolagens (90% da página)</text>
+            <text x="246" y="222" class="j-txt">✓ Cliques de saída</text>
+            <text x="470" y="182" class="j-txt">✓ Pesquisa no site</text>
+            <text x="470" y="202" class="j-txt">✓ Engajamento com vídeo</text>
+            <text x="470" y="222" class="j-txt">✓ Downloads de arquivo</text>
+            <text x="246" y="248" class="j-txt-p">Formulários: ligue com cuidado — costuma duplicar com o seu evento do GTM.</text>
+          </svg>
+          <figcaption>Os cinco lugares do Administrador em que mexemos no setup, e a caixa da medição avançada</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Conecte o GA4 pelo GTM — não pelo código do site</h3>
+        <p>Volte ao contêiner <span class="v">GTM-XXXXXXX</span> e crie uma tag do tipo <strong>Tag do Google</strong> com o ID <span class="v">G-XXXXXXXXXX</span>, acionador <strong>Inicialização — todas as páginas</strong>.</p>
+        <div class="aviso aviso--bloqueio"><i>✕</i><div><b>Erro que dobra os dados</b><p>Se o site já tem o código do GA4 colado direto no head <em>e</em> você adiciona a tag no GTM, cada pageview conta duas vezes. Escolha um caminho só — e o caminho é o GTM.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>4</span><input type="checkbox"></div>
+      <div>
+        <h3>Crie os quatro eventos de conversão</h3>
+        <p>Uma tag <strong>Evento do GA4</strong> para cada acionador montado no módulo 03, passo 6.</p>
+        <table class="valores tres">
+          <tr><th>Ponto de contato</th><th>Nome do evento</th><th>Acionador</th></tr>
+          <tr><td>WhatsApp</td><td><code>clique_whatsapp</code></td><td>Clique WhatsApp</td></tr>
+          <tr><td>Telefone</td><td><code>clique_telefone</code></td><td>Clique telefone</td></tr>
+          <tr><td>E-mail</td><td><code>clique_email</code></td><td>Clique e-mail</td></tr>
+          <tr><td>Formulário</td><td><code>lead_formulario</code></td><td>Página obrigado</td></tr>
+        </table>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Nomenclatura</b><p>Minúsculas, sem acento, separado por underline. O GA4 diferencia maiúsculas de minúsculas — <code>Lead</code> e <code>lead</code> viram dois eventos diferentes e você só descobre um mês depois.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>5</span><input type="checkbox"></div>
+      <div>
+        <h3>Marque os quatro como principais eventos</h3>
+        <span class="caminho">Administrador → Principais eventos → Marcar como principal</span>
+        <p>O evento só aparece nessa lista depois de disparar pelo menos uma vez. Por isso: dispare os quatro no site, espere alguns minutos, depois volte e marque.</p>
+        <p>Se algum ainda não apareceu e você tem pressa, use <strong>Criar principal evento</strong> e digite o nome exato à mão.</p>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>6</span><input type="checkbox"></div>
+      <div>
+        <h3>Limpe os dados antes que sujeira vire histórico</h3>
+        <table class="valores">
+          <tr><th>Ajuste</th><th>O que fazer</th></tr>
+          <tr><td>Retenção de dados</td><td>mudar de 2 para <strong>14 meses</strong> — o padrão é curto demais para comparar ano a ano</td></tr>
+          <tr><td>Tráfego interno</td><td>definir o IP do cliente e o nosso · criar filtro de dados · deixar em <strong>Ativo</strong>, não em Teste</td></tr>
+          <tr><td>Referências indesejadas</td><td>excluir domínios de pagamento e agendamento externos, senão eles roubam o crédito da conversão</td></tr>
+          <tr><td>Mensuração entre domínios</td><td>listar todos os domínios se o funil atravessa mais de um</td></tr>
+        </table>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Filtro de teste esquecido</b><p>Filtro de tráfego interno criado mas deixado em "Teste" não filtra nada. Volte e mude para "Ativo" — é o esquecimento mais comum do GA4.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>7</span><input type="checkbox"></div>
+      <div>
+        <h3>Vincule Google Ads e Search Console</h3>
+        <span class="caminho">Administrador → Vinculações de produtos</span>
+        <p>Vincule o Google Ads (necessário para importar públicos e conversões) e o Search Console (para cruzar orgânico com pago).</p>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>No DebugView você vê os quatro eventos chegando em tempo real com os nomes corretos, e em Tempo real aparece o seu próprio acesso de teste. Os quatro estão marcados como principais.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 05 ========== -->
+<details class="modulo" id="m05">
+  <summary><span class="selo">05</span><h2>Google Ads<small>Conta, faturamento, conversões e a primeira estrutura de campanha</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Conta ativa, faturamento em dia, as quatro conversões gravando e estrutura pronta para receber verba.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulos 03 e 04 concluídos.</p></div>
+      <div><strong>Tempo médio</strong><p>2h a 3h.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Crie a conta em modo especialista</h3>
+        <p>Ao criar, o Google empurra o "Modo inteligente". Procure o link para <strong>mudar para o modo especialista</strong> antes de terminar — no modo inteligente você não tem controle de estrutura, palavras negativas nem lances.</p>
+        <table class="valores">
+          <tr><th>Campo</th><th>Valor</th></tr>
+          <tr><td>Fuso horário</td><td>(GMT-03:00) Brasília</td></tr>
+          <tr><td>Moeda</td><td>BRL — Real brasileiro</td></tr>
+          <tr><td>ID da conta</td><td><span class="v">AW-000000000</span></td></tr>
+        </table>
+        <div class="aviso aviso--bloqueio"><i>✕</i><div><b>Permanente</b><p>Fuso e moeda do Google Ads não podem ser alterados depois. Errou, só criando conta nova e perdendo o histórico.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Configure faturamento e vincule ao MCC</h3>
+        <ul>
+          <li>Faturamento com CNPJ e dados fiscais do <strong>cliente</strong>, nunca os nossos.</li>
+          <li>Peça o vínculo da conta à nossa central de gerenciamento (MCC) — assim administramos sem depender do login dele.</li>
+          <li>Confirme quem paga o cartão e avise sobre o IOF e a data de cobrança.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Crie as quatro ações de conversão</h3>
+        <span class="caminho">Metas → Conversões → Ações de conversão → Nova → Site</span>
+        <p>Mesmo conjunto de sempre: WhatsApp, telefone, e-mail e formulário. Cada uma pendura no acionador correspondente do GTM (módulo 03, passo 6).</p>
+        <table class="valores tres">
+          <tr><th>Conversão</th><th>Categoria</th><th>Contagem</th></tr>
+          <tr><td>WhatsApp</td><td>Contato</td><td>Uma</td></tr>
+          <tr><td>Telefone</td><td>Cliques no número de telefone</td><td>Uma</td></tr>
+          <tr><td>E-mail</td><td>Contato</td><td>Uma</td></tr>
+          <tr><td>Formulário</td><td>Enviar formulário de lead</td><td>Uma</td></tr>
+        </table>
+        <p>Você tem dois caminhos para alimentar essas ações. Escolha um por conversão e não misture — senão conta dobrado.</p>
+        <table class="valores">
+          <tr><th>Caminho</th><th>Quando usar</th></tr>
+          <tr><td>Tag do Ads via GTM</td><td>padrão recomendado — mais controle, dispara junto com o evento e permite conversões otimizadas</td></tr>
+          <tr><td>Importar do GA4</td><td>quando o evento já existe bem configurado no GA4 e você quer atribuição unificada</td></tr>
+        </table>
+        <table class="valores">
+          <tr><th>Configuração</th><th>Valor sugerido</th></tr>
+          <tr><td>Valor</td><td>use um valor médio por lead, mesmo estimado — sem valor, lance inteligente fica cego</td></tr>
+          <tr><td>Janela de conversão</td><td>30 dias para lead · 30 a 90 para venda longa</td></tr>
+          <tr><td>Ação de conversão principal</td><td>só a que queremos otimizar. As outras três vão como secundárias</td></tr>
+        </table>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Nem tudo vira principal</b><p>Marcar as quatro como principais faz o lance inteligente tratar um clique de e-mail com o mesmo peso de um formulário preenchido. Escolha a que representa negócio de verdade e deixe as outras como secundárias, só para observação.</p></div></div>
+        <div class="aviso aviso--ok"><i>✓</i><div><b>Conversões otimizadas</b><p>Ative "conversões otimizadas com dados fornecidos pelo usuário". Você envia e-mail ou telefone com hash e recupera conversões que o cookie sozinho perde. Requer aceite dos termos na conta.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>4</span><input type="checkbox"></div>
+      <div>
+        <h3>Faça as vinculações</h3>
+        <span class="caminho">Administrador → Contas vinculadas</span>
+        <ul>
+          <li><strong>Google Analytics 4</strong> — importar públicos e principais eventos</li>
+          <li><strong>Perfil da Empresa no Google</strong> — habilita extensão de local e campanhas de Máximo desempenho para lojas</li>
+          <li><strong>Merchant Center</strong> — se for e-commerce</li>
+          <li><strong>YouTube</strong> — se for rodar vídeo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>5</span><input type="checkbox"></div>
+      <div>
+        <h3>Confirme a marcação automática e o modelo de rastreamento</h3>
+        <p>Deixe a <strong>marcação automática</strong> (gclid) ligada — ela é o que faz o Google Ads e o GA4 conversarem. Se quiser UTMs também, use um modelo de rastreamento no nível da conta:</p>
+        <span class="caminho">{lpurl}?utm_source=google&amp;utm_medium=cpc&amp;utm_campaign={campaignid}&amp;utm_content={adgroupid}&amp;utm_term={keyword}</span>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Teste antes de aplicar</b><p>Modelo de rastreamento mal formado quebra todos os anúncios da conta de uma vez. Use o botão "Testar" e veja se a página abre.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>6</span><input type="checkbox"></div>
+      <div>
+        <h3>Monte a estrutura inicial</h3>
+        <p>Para cliente de serviço local, este esqueleto resolve a maioria dos casos:</p>
+        <table class="valores">
+          <tr><th>Campanha</th><th>Função</th></tr>
+          <tr><td>Pesquisa — Marca</td><td>defender o nome do cliente, CPC baixo, orçamento pequeno</td></tr>
+          <tr><td>Pesquisa — Genéricas</td><td>a campanha de aquisição de verdade, por intenção de serviço</td></tr>
+          <tr><td>Pesquisa — Concorrentes</td><td>opcional, só depois que as duas de cima estiverem estáveis</td></tr>
+          <tr><td>Máximo desempenho</td><td>só depois de ter volume de conversão — no zero ela queima verba</td></tr>
+        </table>
+        <p>Antes de ativar: preencha os <strong>recursos</strong> (sitelinks, frases de destaque, snippets estruturados, chamada, local) e crie a <strong>lista compartilhada de palavras negativas</strong> com os clássicos: grátis, curso, como fazer, vaga, emprego, apostila, PDF, salário.</p>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>7</span><input type="checkbox"></div>
+      <div>
+        <h3>Valide antes de subir verba</h3>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>Na coluna de status das quatro ações de conversão aparece "Gravando conversões" (pode levar até 24h após o primeiro teste real). A visualização do anúncio abre a landing page certa. O diagnóstico da conta não tem alertas vermelhos.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 06 ========== -->
+<details class="modulo" id="m06">
+  <summary><span class="selo">06</span><h2>Meta — portfólio, ativos e conjunto de dados<small>O ecossistema que mais muda de nome. A lógica embaixo é sempre a mesma</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Portfólio organizado com página, Instagram e WhatsApp vinculados, domínio verificado e eventos disparando.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulos 01 e 03 concluídos.</p></div>
+      <div><strong>Tempo médio</strong><p>2h a 4h.</p></div>
+    </div>
+
+    <div class="aviso aviso--atencao"><i>!</i><div><b>Sobre nomes</b><p>A Meta renomeia painéis o tempo todo: "Business Manager" virou "portfólio empresarial", "pixel" virou "conjunto de dados". Se o nome do menu não bater com o daqui, procure pela função — o caminho muda, o conceito não.</p></div></div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Entre pelo caminho certo: parceiro ou administrador</h3>
+        <span class="caminho">business.facebook.com → Configurações do negócio</span>
+        <p>Confira primeiro se o cliente já tem portfólio empresarial. A resposta define a trilha (a mesma decisão do módulo 00, passo 2).</p>
+        <div class="trilhas">
+          <div class="trilha">
+            <b>Trilha A · Parceiro</b>
+            <span>Já existe portfólio com ativos.</span>
+            <ul>
+              <li>Configurações do negócio → Parceiros → Adicionar parceiro</li>
+              <li>O cliente informa o ID da nossa BM e escolhe quais ativos compartilhar</li>
+              <li>Peça acesso a: página, Instagram, conta de anúncios, conjunto de dados, conta do WhatsApp e catálogo</li>
+              <li>Nada muda de dono</li>
+            </ul>
+          </div>
+          <div class="trilha">
+            <b>Trilha B · Administrador</b>
+            <span>Não existe nada e vamos montar do zero.</span>
+            <ul>
+              <li>Criamos o portfólio pelo perfil pessoal de quem está executando</li>
+              <li>Perfil de trabalho, com verificação em duas etapas ativa</li>
+              <li>Assim que criar: Pessoas → Adicionar → coloque o cliente como administrador</li>
+              <li>E adicione um segundo administrador da equipe, para não ficar em uma pessoa só</li>
+              <li>Anote no registro da conta qual perfil está com o acesso</li>
+              <li>Quando a estrutura estabilizar, migre para acesso de parceiro</li>
+            </ul>
+          </div>
+        </div>
+        <div class="aviso aviso--bloqueio"><i>✕</i><div><b>Armadilha comum</b><p>Criar a conta de anúncios dentro do nosso portfólio. No dia que a parceria terminar, o histórico de aprendizado e os públicos vão embora com a gente — e o cliente perde tudo. Ativo do cliente mora no portfólio do cliente, mesmo na trilha B.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Reúna os ativos dentro do portfólio</h3>
+        <p>Tudo que a conta vai usar precisa estar registrado aqui. Falta de um item costuma aparecer só na hora de subir a campanha.</p>
+        <table class="valores tres">
+          <tr><th>Ativo</th><th>Onde fica</th><th>Obrigatório</th></tr>
+          <tr><td>Página do Facebook</td><td>Contas → Páginas</td><td>sempre</td></tr>
+          <tr><td>Conta do Instagram</td><td>Contas → Contas do Instagram</td><td>sempre, e conectada à página</td></tr>
+          <tr><td>Conta do WhatsApp</td><td>Contas → Contas do WhatsApp</td><td>quando houver WhatsApp no funil</td></tr>
+          <tr><td>Conta de anúncios</td><td>Contas → Contas de anúncios</td><td>sempre, com pagamento do cliente</td></tr>
+          <tr><td>Conjunto de dados (pixel)</td><td>Fontes de dados → Conjuntos de dados</td><td>sempre</td></tr>
+          <tr><td>Domínio</td><td>Segurança da marca → Domínios</td><td>sempre, verificado</td></tr>
+          <tr><td>Catálogo</td><td>Fontes de dados → Catálogos</td><td>se for e-commerce</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Vincule a conta do WhatsApp</h3>
+        <p>Passo que a gente esquece e depois trava a campanha de mensagem. Na maioria dos nossos clientes o WhatsApp é o destino principal do lead — então ele entra no portfólio junto com a página e o Instagram, não depois.</p>
+        <span class="caminho">Configurações do negócio → Contas → Contas do WhatsApp → Adicionar</span>
+        <table class="valores">
+          <tr><th>Item</th><th>O que confirmar</th></tr>
+          <tr><td>Número comercial</td><td>o mesmo que atende o cliente, já ativo no WhatsApp Business</td></tr>
+          <tr><td>Vínculo com a página</td><td>o número precisa estar conectado à página do Facebook para os anúncios de clique para WhatsApp</td></tr>
+          <tr><td>Permissão da conta de anúncios</td><td>a conta de anúncios precisa ter acesso ao ativo do WhatsApp</td></tr>
+          <tr><td>Quem responde</td><td>combine com o cliente quem atende e em quanto tempo — anúncio de mensagem sem resposta rápida queima verba</td></tr>
+        </table>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Onde a conversa é medida</b><p>Conversa iniciada por anúncio de clique para WhatsApp é contada dentro da Meta, não pelo pixel. Já o clique no botão de WhatsApp do <em>site</em> é medido pelo pixel, pelo GA4 e pelo Google Ads. São duas coisas diferentes — não some as duas no relatório.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>4</span><input type="checkbox"></div>
+      <div>
+        <h3>Verifique o domínio</h3>
+        <span class="caminho">Configurações do negócio → Segurança da marca → Domínios → Adicionar</span>
+        <p>Três métodos; o TXT no DNS é o mais estável (ver módulo 01, passo 2).</p>
+        <table class="valores">
+          <tr><th>Método</th><th>Observação</th></tr>
+          <tr><td>Registro TXT no DNS</td><td>recomendado — não quebra quando o site é refeito</td></tr>
+          <tr><td>Meta-tag no &lt;head&gt;</td><td>rápido, mas some se trocarem o tema</td></tr>
+          <tr><td>Upload de arquivo HTML</td><td>só quando temos FTP</td></tr>
+        </table>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Sem domínio verificado</b><p>Você não configura a priorização de eventos, perde controle sobre a atribuição de tráfego iOS e fica sem poder editar links de publicações. É bloqueio de verdade — resolva neste passo.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>5</span><input type="checkbox"></div>
+      <div>
+        <h3>Crie o conjunto de dados e instale via GTM</h3>
+        <span class="caminho">Gerenciador de Eventos → Conectar fontes de dados → Web</span>
+        <p>Anote o ID — <span class="v">000000000000000</span> — no registro da conta. No GTM, crie uma tag <strong>HTML personalizado</strong> com o código base do pixel e acionador <strong>All Pages</strong>, e uma tag por evento de conversão.</p>
+        <figure class="mapa">
+          <svg viewBox="0 0 700 300" role="img" aria-label="Esquema do Gerenciador de Eventos da Meta">
+            <rect x="8" y="8" width="684" height="284" rx="7" class="j-quadro"/>
+            <rect x="8" y="8" width="684" height="34" rx="7" class="j-barra"/>
+            <rect x="8" y="34" width="684" height="8" class="j-barra"/>
+            <text x="24" y="30" class="j-txt-b">Gerenciador de Eventos</text>
+            <text x="180" y="30" class="j-txt-p">Conjunto de dados — cliente.com.br · ID 000000000000000</text>
+
+            <rect x="24" y="56" width="652" height="28" class="j-bloco"/>
+            <text x="40" y="74" class="j-txt-b">Visão geral</text>
+            <text x="130" y="74" class="j-txt">Testar eventos</text>
+            <g class="pino"><circle cx="128" cy="62" r="9"/><text x="125" y="65.5">1</text></g>
+            <text x="240" y="74" class="j-txt">Diagnóstico</text>
+            <g class="pino"><circle cx="238" cy="62" r="9"/><text x="235" y="65.5">2</text></g>
+            <text x="340" y="74" class="j-txt">Histórico</text>
+            <text x="430" y="74" class="j-txt">Configurações</text>
+            <g class="pino"><circle cx="428" cy="62" r="9"/><text x="425" y="65.5">3</text></g>
+
+            <text x="30" y="110" class="j-txt-b">Eventos recebidos nos últimos 7 dias</text>
+
+            <rect x="24" y="122" width="652" height="24" class="j-bloco"/>
+            <text x="40" y="138" class="j-txt-b">EVENTO</text><text x="330" y="138" class="j-txt-b">TOTAL</text>
+            <text x="440" y="138" class="j-txt-b">CONEXÃO</text><text x="580" y="138" class="j-txt-b">QUALIDADE</text>
+
+            <line x1="24" y1="172" x2="676" y2="172" stroke="#E3E8EE"/>
+            <text x="40" y="164" class="j-txt">PageView</text><text x="330" y="164" class="j-txt">4.812</text>
+            <text x="440" y="164" class="j-txt">Navegador + Servidor</text><text x="580" y="164" class="j-txt">8,4 / 10</text>
+
+            <line x1="24" y1="200" x2="676" y2="200" stroke="#E3E8EE"/>
+            <text x="40" y="192" class="j-txt">ViewContent</text><text x="330" y="192" class="j-txt">1.204</text>
+            <text x="440" y="192" class="j-txt">Navegador</text><text x="580" y="192" class="j-txt">6,1 / 10</text>
+
+            <rect x="24" y="204" width="652" height="26" class="j-realce"/>
+            <text x="40" y="221" class="j-txt-b">Lead</text><text x="330" y="221" class="j-txt-b">96</text>
+            <text x="440" y="221" class="j-txt-b">Navegador + Servidor</text><text x="580" y="221" class="j-txt-b">9,2 / 10</text>
+            <g class="pino"><circle cx="24" cy="217" r="9"/><text x="21" y="220.5">4</text></g>
+
+            <line x1="24" y1="258" x2="676" y2="258" stroke="#E3E8EE"/>
+            <text x="40" y="250" class="j-txt">Contact</text><text x="330" y="250" class="j-txt">312</text>
+            <text x="440" y="250" class="j-txt">Navegador</text><text x="580" y="250" class="j-txt">5,8 / 10</text>
+
+            <text x="40" y="278" class="j-txt-p">Qualidade abaixo de 6 quase sempre é falta de parâmetros de correspondência avançada.</text>
+          </svg>
+          <figcaption>1 · testar em tempo real · 2 · onde a Meta avisa o que está errado · 3 · correspondência avançada e CAPI · 4 · evento com conexão dupla = o alvo</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>6</span><input type="checkbox"></div>
+      <div>
+        <h3>Mapeie as quatro conversões para os eventos da Meta</h3>
+        <p>Use os nomes padrão sempre que existir um que sirva — evento personalizado tem menos otimização.</p>
+        <table class="valores tres">
+          <tr><th>Ponto de contato</th><th>Evento</th><th>Parâmetro para diferenciar</th></tr>
+          <tr><td>WhatsApp</td><td><code>Contact</code></td><td><code>content_name: whatsapp</code></td></tr>
+          <tr><td>Telefone</td><td><code>Contact</code></td><td><code>content_name: telefone</code></td></tr>
+          <tr><td>E-mail</td><td><code>Contact</code></td><td><code>content_name: email</code></td></tr>
+          <tr><td>Formulário</td><td><code>Lead</code></td><td>—</td></tr>
+        </table>
+        <p>Para e-commerce, acrescente <code>ViewContent</code>, <code>InitiateCheckout</code> e <code>Purchase</code> com <code>value</code> e <code>currency</code>.</p>
+        <div class="aviso aviso--ok"><i>✓</i><div><b>Por que três viram um só</b><p>A Meta trata WhatsApp, telefone e e-mail como o mesmo tipo de ação: contato. Manter os três como <code>Contact</code> concentra volume e ajuda a otimização a sair do zero. O parâmetro é o que permite separar depois no relatório.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>7</span><input type="checkbox"></div>
+      <div>
+        <h3>Ative a API de Conversões e priorize os eventos</h3>
+        <p>Envio pelo navegador sozinho perde entre 20% e 40% dos eventos por bloqueador e restrição de cookie. Escolha um caminho:</p>
+        <table class="valores">
+          <tr><th>Caminho</th><th>Quando faz sentido</th></tr>
+          <tr><td>Integração de parceiro</td><td>plataforma pronta (Shopify, WordPress com plugin oficial) — mais simples</td></tr>
+          <tr><td>Gateway da API de Conversões</td><td>quando não há integração e queremos algo gerenciado</td></tr>
+          <tr><td>GTM do lado do servidor</td><td>controle total, mais trabalho, custo de servidor</td></tr>
+        </table>
+        <p>Ative também a <strong>correspondência avançada</strong> e, se usar CAPI, configure o <code>event_id</code> para desduplicar navegador e servidor.</p>
+        <span class="caminho">Gerenciador de Eventos → Configurações agregadas de eventos → Configurar eventos da web</span>
+        <p>São até <strong>8 eventos</strong> por domínio verificado, do mais valioso para o menos. Ordem sugerida para serviço local: <code>Lead</code> → <code>Contact</code> → <code>Schedule</code> → <code>ViewContent</code> → <code>PageView</code>.</p>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Mexer aqui zera aprendizado</b><p>Alterar a priorização coloca as campanhas ativas em período de espera de até 72h. Defina a ordem no setup e não fique remexendo depois.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>8</span><input type="checkbox"></div>
+      <div>
+        <h3>Monte os públicos base</h3>
+        <table class="valores">
+          <tr><th>Público</th><th>Regra</th></tr>
+          <tr><td>Visitantes do site</td><td>todos os visitantes — 180 dias</td></tr>
+          <tr><td>Engajamento IG + FB</td><td>quem interagiu — 365 dias</td></tr>
+          <tr><td>Conversas no WhatsApp</td><td>quem enviou mensagem — 365 dias</td></tr>
+          <tr><td>Visualizou vídeo</td><td>75% do vídeo — 365 dias</td></tr>
+          <tr><td>Lista de clientes</td><td>upload do CRM, com consentimento</td></tr>
+          <tr><td>Semelhante 1%</td><td>a partir da lista de clientes ou dos leads</td></tr>
+        </table>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>O Meta Pixel Helper mostra os eventos certos disparando sem aviso de erro, "Testar eventos" recebe seu teste em tempo real, o domínio aparece como verificado, a conta do WhatsApp está no portfólio com o número certo e a priorização está salva.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 07 ========== -->
+<details class="modulo" id="m07">
+  <summary><span class="selo">07</span><h2>Perfil da Empresa no Google<small>O ativo mais barato do cliente local — e o mais abandonado</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Perfil verificado, completo e rastreado.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulo 01 concluído.</p></div>
+      <div><strong>Tempo médio</strong><p>1h + prazo de verificação do Google.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Reivindique ou crie o perfil</h3>
+        <p>Pesquise o nome do cliente no Google Maps antes. Perfil duplicado é comum — se achar dois, reivindique o que tem mais avaliações e peça a remoção do outro.</p>
+        <p>A verificação hoje costuma ser por vídeo: gravação contínua mostrando fachada com placa, entrada, interior e alguma prova de gestão (chave, sistema, documento). Combine com o cliente para gravar de uma vez só.</p>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Preencha tudo — a completude é fator de ranqueamento</h3>
+        <table class="valores">
+          <tr><th>Campo</th><th>Como preencher</th></tr>
+          <tr><td>Categoria principal</td><td>a mais específica que existir. Só uma, e é a que mais pesa</td></tr>
+          <tr><td>Categorias secundárias</td><td>até 9, sem inventar</td></tr>
+          <tr><td>Serviços</td><td>um item por serviço, com descrição própria</td></tr>
+          <tr><td>Horário</td><td>incluindo feriados</td></tr>
+          <tr><td>Fotos</td><td>logo, capa, fachada, interior, equipe, trabalho realizado</td></tr>
+          <tr><td>Atributos</td><td>acessibilidade, pagamento, estacionamento</td></tr>
+          <tr><td>Descrição</td><td>750 caracteres, sem promessa de resultado</td></tr>
+        </table>
+        <div class="aviso aviso--bloqueio"><i>✕</i><div><b>Não faça</b><p>Colocar palavra-chave no nome da empresa ("Dentista Arapiraca — Clínica X"). É violação de diretriz e derruba o perfil. O nome é o nome real.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Rastreie o tráfego que vem do perfil</h3>
+        <p>Coloque UTM no campo do site para separar esse tráfego no GA4:</p>
+        <span class="caminho">https://cliente.com.br/?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=perfil_empresa</span>
+        <p>Vincule também o perfil ao Google Ads (módulo 05, passo 4) para liberar extensão de local.</p>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>O perfil aparece verificado, a busca pelo nome do cliente traz o painel completo com fotos, e o GA4 já registra sessões com a origem <code>google / organic / perfil_empresa</code>.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 08 ========== -->
+<details class="modulo" id="m08">
+  <summary><span class="selo">08</span><h2>Nomenclatura e UTMs<small>Combinado antes vira relatório limpo depois</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Um padrão único, usado em todas as contas, que permite filtrar e comparar.</p></div>
+      <div><strong>Pré-requisito</strong><p>Nenhum — aplique desde a primeira campanha.</p></div>
+      <div><strong>Tempo médio</strong><p>20 min para definir, para sempre para usar.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Adote o padrão de nome de campanha</h3>
+        <span class="caminho">[CANAL]_[OBJETIVO]_[PÚBLICO]_[OFERTA]_[MÊS-ANO]</span>
+        <p>Exemplos: <code>META_CONV_FRIO_AVALIACAO-GRATIS_08-26</code> · <code>GADS_SEARCH_GENERICAS_IMPLANTE_08-26</code></p>
+        <p>Tudo em maiúsculas, sem acento, separando blocos com underline e palavras dentro do bloco com hífen. Assim qualquer ferramenta de BI consegue quebrar o nome em colunas.</p>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Padronize os UTMs</h3>
+        <table class="valores">
+          <tr><th>Parâmetro</th><th>Valor</th></tr>
+          <tr><td>utm_source</td><td><code>meta</code> · <code>google</code> · <code>instagram</code> · <code>whatsapp</code></td></tr>
+          <tr><td>utm_medium</td><td><code>cpc</code> (pago busca) · <code>paid_social</code> (pago social) · <code>organic</code> · <code>email</code></td></tr>
+          <tr><td>utm_campaign</td><td>o mesmo nome da campanha, em minúsculas</td></tr>
+          <tr><td>utm_content</td><td>identificação do criativo ou do anúncio</td></tr>
+          <tr><td>utm_term</td><td>palavra-chave (só no Google Ads)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Use parâmetros dinâmicos na Meta</h3>
+        <p>No campo de parâmetros de URL do anúncio, cole isto e a Meta preenche sozinha:</p>
+        <span class="caminho">utm_source=meta&amp;utm_medium=paid_social&amp;utm_campaign={{campaign.name}}&amp;utm_content={{ad.name}}&amp;utm_term={{adset.name}}&amp;placement={{placement}}</span>
+        <div class="aviso aviso--ok"><i>✓</i><div><b>Ganho real</b><p>Com isso o GA4 mostra qual criativo específico gerou o lead, sem você precisar montar link manualmente para cada anúncio.</p></div></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 09 ========== -->
+<details class="modulo" id="m09">
+  <summary><span class="selo">09</span><h2>Relatórios e BI<small>O que o cliente vê, e o que você olha para decidir</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Painel montado, fontes conectadas e ciclo de reporte combinado.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulos 04, 05 e 06 concluídos.</p></div>
+      <div><strong>Tempo médio</strong><p>2h no primeiro cliente · 30 min replicando o modelo.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Conecte as fontes</h3>
+        <ul>
+          <li>Google Ads e GA4 — conectores nativos do Looker Studio</li>
+          <li>Meta Ads — conector externo (Windsor.ai ou similar)</li>
+          <li>Dados de fechamento — planilha alimentada pelo cliente, se ele tiver</li>
+        </ul>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Combine o dado de venda no primeiro mês</b><p>Sem saber quantos leads viraram cliente, você reporta custo por lead e o cliente cobra custo por venda. Alinhe quem envia esse número e quando.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Estruture o painel em três camadas</h3>
+        <table class="valores">
+          <tr><th>Camada</th><th>Conteúdo</th></tr>
+          <tr><td>Resumo (o cliente olha)</td><td>investimento, leads, custo por lead, comparação com o mês anterior</td></tr>
+          <tr><td>Canal (vocês discutem)</td><td>desempenho por plataforma, por campanha, por criativo</td></tr>
+          <tr><td>Diagnóstico (você usa)</td><td>CPM, CTR, frequência, taxa de conversão da página, aprendizado</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Defina o ritual de reporte</h3>
+        <p>Combine na assinatura: relatório automático semanal por mensagem, reunião mensal de 30 minutos com análise e próximo plano. Sem ritual definido, todo mês vira cobrança de última hora.</p>
+        <div class="checagem"><strong>Como saber que fechou</strong><p>O painel abre com dados reais, o link foi enviado ao cliente e a próxima reunião já está no calendário dos dois.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ========== 10 ========== -->
+<details class="modulo" id="m10">
+  <summary><span class="selo">10</span><h2>Checagem final e entrega<small>A passagem antes de gastar o primeiro real</small></h2><span class="contador"></span></summary>
+  <div class="modulo__corpo">
+
+    <div class="meta">
+      <div><strong>Objetivo</strong><p>Nenhum ponto solto. Conta pronta para receber verba.</p></div>
+      <div><strong>Pré-requisito</strong><p>Módulos 00 a 09.</p></div>
+      <div><strong>Tempo médio</strong><p>45 min.</p></div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>1</span><input type="checkbox"></div>
+      <div>
+        <h3>Rode o teste de ponta a ponta, como se fosse cliente</h3>
+        <p>Pelo celular, na rede móvel, não no wi-fi do escritório. Faça o caminho inteiro:</p>
+        <ol>
+          <li>Abra o site pelo link de um anúncio de teste</li>
+          <li>Clique no WhatsApp e mande mensagem de verdade</li>
+          <li>Volte e clique no telefone — o discador precisa abrir com o número certo</li>
+          <li>Volte e clique no e-mail — o app de e-mail precisa abrir com o endereço certo</li>
+          <li>Volte, preencha o formulário e chegue na página de obrigado</li>
+          <li>Confira se o lead chegou onde deveria chegar, nos quatro canais</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>2</span><input type="checkbox"></div>
+      <div>
+        <h3>Confira cada painel de validação</h3>
+        <table class="valores">
+          <tr><th>Ferramenta</th><th>O que precisa aparecer</th></tr>
+          <tr><td>Tag Assistant</td><td>contêiner conectado, tags acionando nos eventos certos</td></tr>
+          <tr><td>GA4 — DebugView</td><td>os quatro eventos com nomes corretos e parâmetros preenchidos</td></tr>
+          <tr><td>GA4 — Tempo real</td><td>seu acesso de teste visível</td></tr>
+          <tr><td>Meta Pixel Helper</td><td>eventos sem aviso de erro</td></tr>
+          <tr><td>Meta — Testar eventos</td><td>evento chegando pelo navegador e pelo servidor</td></tr>
+          <tr><td>Meta — Configurações do negócio</td><td>página, Instagram e conta do WhatsApp vinculados</td></tr>
+          <tr><td>Google Ads — Conversões</td><td>as quatro ações com status "Gravando conversões"</td></tr>
+          <tr><td>PageSpeed Insights</td><td>LCP abaixo de 2,5s no celular</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>3</span><input type="checkbox"></div>
+      <div>
+        <h3>Faça a auditoria dos esquecimentos clássicos</h3>
+        <ul>
+          <li>Filtro de tráfego interno no GA4 ficou em "Teste" em vez de "Ativo"</li>
+          <li>Retenção de dados continua em 2 meses</li>
+          <li>GA4 rodando duas vezes (código no site + tag no GTM)</li>
+          <li>Vinculador de conversões não foi criado</li>
+          <li>Contêiner do GTM editado mas não publicado</li>
+          <li>Conversão marcada como principal <em>e</em> importada do GA4 ao mesmo tempo</li>
+          <li>Domínio não verificado na Meta</li>
+          <li>Conta do WhatsApp fora do portfólio — a campanha de mensagem não sobe</li>
+          <li>Acesso da Meta preso a um único perfil pessoal, sem segundo administrador</li>
+          <li>Lista de palavras negativas não aplicada às campanhas</li>
+        </ul>
+        <div class="aviso aviso--atencao"><i>!</i><div><b>Leia essa lista em voz alta</b><p>São os itens que aparecem em quase toda conta herdada de outra agência. Vale como roteiro de auditoria quando você assume conta que já existia.</p></div></div>
+      </div>
+    </div>
+
+    <div class="passo">
+      <div class="marca-passo"><span>4</span><input type="checkbox"></div>
+      <div>
+        <h3>Entregue a documentação</h3>
+        <p>Feche o registro da conta no controle interno (módulo 00, passo 5) com todos os IDs preenchidos, a trilha de acesso usada e quem executou. Depois mande ao cliente:</p>
+        <ul>
+          <li>Lista de todos os ativos criados e quem é o proprietário de cada um</li>
+          <li>Confirmação de que os ativos estão no nome dele e de que ele é administrador</li>
+          <li>Data prevista para o primeiro relatório</li>
+        </ul>
+        <div class="checagem"><strong>Setup concluído</strong><p>Todos os módulos marcados, teste de ponta a ponta passou, documentação enviada. Pode subir verba.</p></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+  <footer class="rodape">
+    <p><strong>POP de Setup — Implantação de conta · documento interno</strong><br>
+    Documento de trabalho da equipe. As marcações valem para a sessão aberta no navegador — se a página for recarregada, o checklist volta ao zero. Revise o conteúdo a cada trimestre: os painéis do Google e da Meta mudam de nome com frequência.</p>
+  </footer>
+</main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var modulos = Array.prototype.slice.call(document.querySelectorAll(".modulo"));
+  var indice = document.getElementById("indice");
+  var links = {};
+
+  /* ---------- ÍNDICE LATERAL ---------- */
+  modulos.forEach(function(m){
+    var selo = m.querySelector(".selo").textContent;
+    var titulo = m.querySelector("h2").firstChild.textContent.trim();
+    var li = document.createElement("li");
+    li.innerHTML = '<a href="#' + m.id + '"><em>' + selo + '</em><span>' + titulo + '</span></a>';
+    var a = li.querySelector("a");
+    a.addEventListener("click", function(){ m.open = true; });
+    links[m.id] = a;
+    indice.appendChild(li);
+  });
+
+  /* ---------- PROGRESSO ---------- */
+  var todosPassos = Array.prototype.slice.call(document.querySelectorAll(".passo"));
+
+  function atualizar(){
+    modulos.forEach(function(m){
+      var passos = m.querySelectorAll(".passo").length;
+      var feitos = m.querySelectorAll(".passo.feito").length;
+      var completo = passos > 0 && feitos === passos;
+      var alvo = m.querySelector(".contador");
+      alvo.textContent = feitos + " / " + passos;
+      alvo.classList.toggle("pronto", completo);
+      m.classList.toggle("completo", completo);
+      if(links[m.id]) links[m.id].classList.toggle("completo", completo);
+    });
+    var total = todosPassos.length;
+    var ok = document.querySelectorAll(".passo.feito").length;
+    var pct = total ? Math.round(ok / total * 100) : 0;
+    document.getElementById("pct").textContent = pct + "%";
+    document.getElementById("barra").style.width = pct + "%";
+  }
+
+  todosPassos.forEach(function(p){
+    var cx = p.querySelector('input[type=checkbox]');
+    if(!cx) return;
+    cx.addEventListener("change", function(){
+      p.classList.toggle("feito", cx.checked);
+      atualizar();
+    });
+  });
+
+  window.limparProgresso = function(){
+    todosPassos.forEach(function(p){
+      var cx = p.querySelector('input[type=checkbox]');
+      if(cx) cx.checked = false;
+      p.classList.remove("feito");
+    });
+    atualizar();
+  };
+
+  window.abrirTudo = function(estado){
+    modulos.forEach(function(m){ m.open = estado; });
+  };
+
+  window.addEventListener("beforeprint", function(){ window.abrirTudo(true); });
+
+  /* ---------- NAVEGAÇÃO ATIVA ---------- */
+  if("IntersectionObserver" in window){
+    var observador = new IntersectionObserver(function(entradas){
+      entradas.forEach(function(entrada){
+        var a = links[entrada.target.id];
+        if(!a || !entrada.isIntersecting) return;
+        Object.keys(links).forEach(function(k){ links[k].classList.remove("ativo"); });
+        a.classList.add("ativo");
+      });
+    }, { rootMargin: "-15% 0px -70% 0px" });
+    modulos.forEach(function(m){ observador.observe(m); });
+  }
+
+  atualizar();
+})();
+</script>
+</body>
+</html>
